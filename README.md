@@ -4,6 +4,22 @@ Aplicativo iOS para ajudar profissionais autônomos a acompanhar cobranças e le
 
 O projeto foi desenvolvido como atividade de extensão da disciplina **Inteligência Artificial para Devs**. A proposta surgiu a partir da dificuldade de profissionais do audiovisual em organizar prazos e escrever mensagens de cobrança claras e respeitosas.
 
+## Evidências
+
+### Vídeo de funcionamento
+
+Vídeo demonstrando o cadastro de uma cobrança, a alteração do status de pagamento e a geração de uma mensagem com IA local.
+
+> O vídeo será adicionado aqui.
+
+### Capturas de tela
+
+1. Tela inicial com o resumo das cobranças.
+2. Cadastro ou detalhes de uma cobrança.
+3. Mensagem de cobrança gerada pela IA local.
+
+> As três capturas de tela serão adicionadas aqui.
+
 ## Funcionalidades
 
 - Cadastro de clientes, projetos, valores e prazos de pagamento.
