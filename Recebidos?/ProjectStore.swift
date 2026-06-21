@@ -63,6 +63,21 @@ final class ProjectStore {
         updatePaymentReminder(for: projects[index])
     }
 
+    func updateValue(_ value: Decimal, for project: ClientProject) {
+        guard value > 0,
+              let index = projects.firstIndex(where: { $0.id == project.id }) else { return }
+
+        projects[index].projectValue = value
+        saveProjects()
+        updatePaymentReminder(for: projects[index])
+    }
+
+    func delete(_ project: ClientProject) {
+        PaymentNotificationManager.cancelPaymentReminder(for: project)
+        projects.removeAll { $0.id == project.id }
+        saveProjects()
+    }
+
     func updateProfile(_ profile: UserProfile) {
         self.profile = profile
         saveProfile()

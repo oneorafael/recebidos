@@ -25,28 +25,35 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    SummaryHeader(
-                        totalReceived: store.totalReceived,
-                        totalPending: store.totalPending,
-                        pendingCount: store.projects.filter { !$0.isPaid }.count
-                    )
+            List {
+                SummaryHeader(
+                    totalReceived: store.totalReceived,
+                    totalPending: store.totalPending,
+                    pendingCount: store.projects.filter { !$0.isPaid }.count
+                )
+                .listRowInsets(EdgeInsets(top: 18, leading: 20, bottom: 12, trailing: 20))
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
 
-                    ProjectListSection(
-                        projects: orderedProjects,
-                        profile: store.profile,
-                        onTogglePaid: { project in
-                            store.togglePaid(for: project)
-                        },
-                        onSetPaid: { project, isPaid in
-                            store.setPaid(isPaid, for: project)
-                        }
-                    )
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 18)
+                ProjectListSection(
+                    projects: orderedProjects,
+                    profile: store.profile,
+                    onTogglePaid: { project in
+                        store.togglePaid(for: project)
+                    },
+                    onSetPaid: { project, isPaid in
+                        store.setPaid(isPaid, for: project)
+                    },
+                    onUpdateValue: { project, value in
+                        store.updateValue(value, for: project)
+                    },
+                    onDelete: { project in
+                        store.delete(project)
+                    }
+                )
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .background(AppBackground())
             .navigationTitle("Recebidos?")
             .toolbar {

@@ -43,29 +43,49 @@ struct ProjectListSection: View {
     let profile: UserProfile
     let onTogglePaid: (ClientProject) -> Void
     let onSetPaid: (ClientProject, Bool) -> Void
+    let onUpdateValue: (ClientProject, Decimal) -> Void
+    let onDelete: (ClientProject) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Cobranças")
-                .font(.title3.weight(.bold))
-
+        Section {
             if projects.isEmpty {
                 EmptyStateView(
                     title: "Nada cadastrado",
                     subtitle: "Adicione uma cobrança para acompanhar pagamentos."
                 )
+                .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 18, trailing: 20))
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
             } else {
-                LazyVStack(spacing: 10) {
-                    ForEach(projects) { project in
-                        NavigationLink {
-                            ProjectDetailView(project: project, profile: profile, onSetPaid: onSetPaid)
+                ForEach(projects) { project in
+                    NavigationLink {
+                        ProjectDetailView(
+                            project: project,
+                            profile: profile,
+                            onSetPaid: onSetPaid,
+                            onUpdateValue: onUpdateValue
+                        )
+                    } label: {
+                        ProjectRow(project: project, onTogglePaid: onTogglePaid)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            onDelete(project)
                         } label: {
-                            ProjectRow(project: project, onTogglePaid: onTogglePaid)
+                            Label("Apagar", systemImage: "trash")
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
+        } header: {
+            Text("Cobranças")
+                .font(.title3.weight(.bold))
+                .textCase(nil)
+                .foregroundStyle(.primary)
         }
     }
 }

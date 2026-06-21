@@ -6,14 +6,28 @@
 import SwiftUI
 
 struct ProjectDetailView: View {
-    let project: ClientProject
+    @State private var project: ClientProject
     let profile: UserProfile
     let onSetPaid: (ClientProject, Bool) -> Void
+    let onUpdateValue: (ClientProject, Decimal) -> Void
 
     @State private var selectedTone: MessageTone = .professional
     @State private var generatedMessage: String?
     @State private var isGeneratingMessage = false
     @State private var generationError: String?
+    @State private var isEditingValue = false
+
+    init(
+        project: ClientProject,
+        profile: UserProfile,
+        onSetPaid: @escaping (ClientProject, Bool) -> Void,
+        onUpdateValue: @escaping (ClientProject, Decimal) -> Void
+    ) {
+        _project = State(initialValue: project)
+        self.profile = profile
+        self.onSetPaid = onSetPaid
+        self.onUpdateValue = onUpdateValue
+    }
 
     var message: String {
         generatedMessage ?? MessageBuilder.message(for: project, profile: profile, tone: selectedTone)
@@ -37,13 +51,30 @@ struct ProjectDetailView: View {
                 .glassCard()
 
                 PaymentStateControl(isPaid: project.isPaid) { isPaid in
+                    project.isPaid = isPaid
                     onSetPaid(project, isPaid)
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
                     DetailLine(title: "Data do projeto", value: project.projectDate.formatted(date: .long, time: .omitted), icon: "calendar")
                     DetailLine(title: "Prazo do pagamento", value: project.paymentDueDate.formatted(date: .long, time: .omitted), icon: "calendar.badge.clock")
-                    DetailLine(title: "Valor", value: project.projectValue.formatted(.currency(code: "BRL")), icon: "banknote.fill")
+                    Button {
+                        isEditingValue = true
+                    } label: {
+                        HStack(spacing: 12) {
+                            DetailLine(
+                                title: "Valor",
+                                value: project.projectValue.formatted(.currency(code: "BRL")),
+                                icon: "banknote.fill"
+                            )
+
+                            Image(systemName: "pencil")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Editar valor do projeto")
                     DetailLine(title: "Contato", value: project.contactMethod.rawValue, icon: project.contactMethod.icon)
                 }
                 .padding(16)
@@ -108,6 +139,15 @@ struct ProjectDetailView: View {
         .background(AppBackground())
         .navigationTitle("Projeto")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $isEditingValue) {
+            EditProjectValueView(value: project.projectValue) { value in
+                project.projectValue = value
+                generatedMessage = nil
+                generationError = nil
+                onUpdateValue(project, value)
+            }
+            .presentationDetents([.medium])
+        }
     }
 
     private func generateMessageWithAI() async {
@@ -122,5 +162,64 @@ struct ProjectDetailView: View {
         }
 
         isGeneratingMessage = false
+    }
+}
+
+private struct EditProjectValueView: View {
+    @Environment(\.dismiss) private var dismiss
+    @FocusState private var isValueFieldFocused: Bool
+
+    @State private var value: Decimal
+    let onSave: (Decimal) -> Void
+
+    init(value: Decimal, onSave: @escaping (Decimal) -> Void) {
+        _value = State(initialValue: value)
+        self.onSave = onSave
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField(
+                        "Valor",
+                        value: $value,
+                        format: .currency(code: "BRL").locale(Locale(identifier: "pt_BR"))
+                    )
+                    .keyboardType(.decimalPad)
+                    .focused($isValueFieldFocused)
+                } footer: {
+                    Text("O novo valor será atualizado também no resumo e no lembrete de pagamento.")
+                }
+            }
+            .navigationTitle("Editar valor")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancelar") {
+                        dismiss()
+                    }
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Salvar") {
+                        onSave(value)
+                        dismiss()
+                    }
+                    .disabled(value <= 0)
+                }
+
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+
+                    Button("Concluir") {
+                        isValueFieldFocused = false
+                    }
+                }
+            }
+            .task {
+                isValueFieldFocused = true
+            }
+        }
     }
 }
