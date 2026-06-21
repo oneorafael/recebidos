@@ -1,0 +1,43 @@
+# Recebidos?
+
+Aplicativo iOS para ajudar profissionais autônomos a acompanhar cobranças e lembrar clientes sobre pagamentos pendentes.
+
+O projeto foi desenvolvido como atividade de extensão da disciplina **Inteligência Artificial para Devs**. A proposta surgiu a partir da dificuldade de profissionais do audiovisual em organizar prazos e escrever mensagens de cobrança claras e respeitosas.
+
+## Funcionalidades
+
+- Cadastro de clientes, projetos, valores e prazos de pagamento.
+- Controle de cobranças recebidas e pendentes.
+- Armazenamento local dos dados do aplicativo.
+- Notificações locais às 9h na data de vencimento.
+- Geração de mensagens de cobrança em diferentes tons.
+- Compartilhamento da mensagem gerada.
+
+## Inteligência artificial
+
+O aplicativo utiliza o framework **Foundation Models** da Apple para gerar mensagens no próprio dispositivo. Os dados do cliente e do profissional são usados como contexto, sem depender de uma API externa.
+
+Quando o modelo local não está disponível, o aplicativo apresenta uma mensagem padrão para que a funcionalidade principal continue funcionando.
+
+## Tecnologias
+
+- Swift
+- SwiftUI
+- Foundation Models
+- UserNotifications
+- Observation
+- UserDefaults com Codable
+
+## Requisitos
+
+- Xcode compatível com o SDK do iOS 26
+- iOS 26 ou posterior
+- Dispositivo compatível com Apple Intelligence para a geração por IA
+
+## Execução
+
+1. Abra `Recebidos?.xcodeproj` no Xcode.
+2. Selecione um simulador ou dispositivo compatível.
+3. Execute o projeto com `Command + R`.
+
+As demais funções do aplicativo podem ser testadas no simulador. A geração com Foundation Models depende de um dispositivo compatível e da disponibilidade do modelo local.
