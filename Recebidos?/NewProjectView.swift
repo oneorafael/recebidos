@@ -13,7 +13,7 @@ struct NewProjectView: View {
     @State private var projectName = ""
     @State private var projectDate = Date()
     @State private var paymentDueDate = Date()
-    @State private var projectValue = 0.0
+    @State private var projectValue: Decimal = 0
     @State private var isPaid = false
     @State private var contactMethod: ContactMethod = .whatsapp
 
@@ -31,7 +31,11 @@ struct NewProjectView: View {
                 Section {
                     TextField("Cliente", text: $clientName)
                     TextField("Projeto ou evento", text: $projectName)
-                    TextField("Valor", value: $projectValue, format: .currency(code: "BRL"))
+                    TextField(
+                        "Valor",
+                        value: $projectValue,
+                        format: .currency(code: "BRL").locale(Locale(identifier: "pt_BR"))
+                    )
                         .keyboardType(.decimalPad)
                         .focused($isValueFieldFocused)
                 }
@@ -67,7 +71,7 @@ struct NewProjectView: View {
                             projectName: projectName,
                             projectDate: projectDate,
                             paymentDueDate: paymentDueDate,
-                            projectValue: Decimal(projectValue),
+                            projectValue: projectValue,
                             isPaid: isPaid,
                             contactMethod: contactMethod,
                             contactInfo: "",
