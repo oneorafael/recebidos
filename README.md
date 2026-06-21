@@ -10,7 +10,10 @@ O projeto foi desenvolvido como atividade de extensão da disciplina **Inteligê
 
 Vídeo demonstrando o cadastro de uma cobrança, a alteração do status de pagamento e a geração de uma mensagem com IA local.
 
-> O vídeo será adicionado aqui.
+<img width="1194" height="834" alt="IMG_0005" src="https://github.com/user-attachments/assets/ca029b66-92ef-423a-a8dd-bb85f30afb7b" />
+<img width="1194" height="834" alt="IMG_0006" src="https://github.com/user-attachments/assets/f97afdf3-3122-4d28-aed1-7cba175b7234" />
+<img width="1194" height="834" alt="IMG_0007" src="https://github.com/user-attachments/assets/bce36bcd-af55-44e1-93c2-738f5af8a088" />
+<img width="1194" height="834" alt="IMG_0008" src="https://github.com/user-attachments/assets/341cb586-1cb3-4567-8214-d2ca62fa613f" />
 
 ### Capturas de tela
 
