@@ -6,16 +6,96 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+    @State private var store = ProjectStore()
+    @State private var isPresentingNewProject = false
+    @State private var isPresentingProfile = false
+
+    private var orderedProjects: [ClientProject] {
+        store.projects.sorted {
+            if $0.isPaid != $1.isPaid {
+                return !$0.isPaid
+            }
+
+            return $0.paymentDueDate < $1.paymentDueDate
         }
-        .padding()
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    SummaryHeader(
+                        totalReceived: store.totalReceived,
+                        totalPending: store.totalPending,
+                        pendingCount: store.projects.filter { !$0.isPaid }.count
+                    )
+
+                    ProjectListSection(
+                        projects: orderedProjects,
+                        profile: store.profile,
+                        onTogglePaid: { project in
+                            store.togglePaid(for: project)
+                        },
+                        onSetPaid: { project, isPaid in
+                            store.setPaid(isPaid, for: project)
+                        }
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 18)
+            }
+            .background(AppBackground())
+            .navigationTitle("Recebidos?")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        isPresentingProfile = true
+                    } label: {
+                        Image(systemName: "person.crop.circle")
+                    }
+                    .accessibilityLabel("Editar perfil")
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isPresentingNewProject = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.primary)
+                }
+            }
+            .sheet(isPresented: $isPresentingNewProject) {
+                NewProjectView { project in
+                    store.add(project)
+                }
+            }
+            .sheet(isPresented: $isPresentingProfile) {
+                ProfileView(profile: store.profile) { profile in
+                    store.updateProfile(profile)
+                }
+            }
+            .task {
+                await prepareNotificationPrompt()
+            }
+        }
+    }
+
+    private func prepareNotificationPrompt() async {
+        switch await PaymentNotificationManager.authorizationStatus() {
+        case .notDetermined:
+            await store.preparePaymentNotifications()
+        case .authorized, .provisional, .ephemeral:
+            store.syncPaymentNotifications()
+        case .denied:
+            break
+        @unknown default:
+            break
+        }
     }
 }
 
