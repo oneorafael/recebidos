@@ -41,7 +41,11 @@ Quando o modelo local não está disponível, o aplicativo apresenta uma mensage
 
 - Xcode compatível com o SDK do iOS 26
 - iOS 26 ou posterior
-- Dispositivo compatível com Apple Intelligence para a geração por IA
+- Dispositivo compatível com Apple Intelligence para a geração por IA (`iPhone 15 Pro` ou superior)
+
+## Guia
+
+- Documentação oficial do Foundation Models: https://developer.apple.com/documentation/foundationmodels
 
 ## Execução
 
